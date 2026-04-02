@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TOOL BY NTUANDX - Dự Đoán Tài Xỉu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a2a 0%, #0f0f2a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', monospace;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            border: 1px solid #00ff88;
+            padding: 25px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+            border-radius: 50px;
+            padding: 5px 15px;
+            display: inline-block;
+            font-size: 12px;
+            color: #00ff88;
+        }
+
+        h1 {
+            font-size: 22px;
+            color: #fff;
+            margin-top: 8px;
+        }
+
+        .key-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #ffaa44;
+            border-radius: 50px;
+            padding: 12px 18px;
+            color: #ffaa44;
+            font-family: monospace;
+            font-size: 13px;
+            margin-bottom: 12px;
+            outline: none;
+            text-align: center;
+        }
+
+        .key-input:focus {
+            border-color: #00ff88;
+        }
+
+        .btn {
+            width: 100%;
+            background: linear-gradient(95deg, #00aa44, #00ff88);
+            border: none;
+            border-radius: 50px;
+            padding: 12px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .btn-admin {
+            background: linear-gradient(95deg, #ffaa44, #ff6600);
+            margin-top: 5px;
+        }
+
+        .btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px #00ff88;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid #ffaa44;
+            display: none;
+        }
+
+        .admin-title {
+            color: #ffaa44;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .key-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .key-input-small {
+            flex: 2;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #ffaa44;
+            border-radius: 30px;
+            padding: 10px 15px;
+            color: #ffdd99;
+            outline: none;
+            font-size: 12px;
+        }
+
+        .expiry-select {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #ffaa44;
+            border-radius: 30px;
+            padding: 10px 12px;
+            color: #ffdd99;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .key-gen-btn {
+            background: #ffaa44;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #1a1a2a;
+        }
+
+        .key-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .key-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid rgba(255, 170, 68, 0.3);
+            font-size: 10px;
+        }
+
+        .key-item code {
+            color: #ffaa66;
+            font-family: monospace;
+            font-size: 9px;
+        }
+
+        .del-key {
+            background: #ff4444;
+            border: none;
+            border-radius: 20px;
+            padding: 4px 10px;
+            color: white;
+            cursor: pointer;
+            font-size: 9px;
+        }
+
+        .stat-row {
+            display: flex;
+            gap: 12px;
+            margin: 15px 0;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .stat-number.tai { color: #00ff88; }
+        .stat-number.xiu { color: #ff6666; }
+        .stat-label { font-size: 11px; color: #aaa; }
+
+        .session-box {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 15px;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .session-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffdd99;
+        }
+
+        .prediction-value {
+            font-size: 52px;
+            font-weight: 800;
+            padding: 15px;
+            border-radius: 50px;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+        }
+
+        .pred-tai {
+            background: linear-gradient(135deg, #00aa44, #008833);
+            color: white;
+        }
+
+        .pred-xiu {
+            background: linear-gradient(135deg, #cc3333, #aa2222);
+            color: white;
+        }
+
+        .confidence-bar {
+            height: 6px;
+            background: #2a2a4a;
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffaa44, #ff6600);
+            width: 0%;
+        }
+
+        .history-list {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 12px 0;
+            justify-content: center;
+        }
+
+        .history-item {
+            width: 36px;
+            padding: 8px 0;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .history-tai {
+            background: #00aa44;
+            color: white;
+        }
+
+        .history-xiu {
+            background: #cc3333;
+            color: white;
+        }
+
+        .history-current {
+            border: 2px solid #ffaa44;
+        }
+
+        .analysis-text {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 12px;
+            font-size: 11px;
+            color: #ffaa66;
+            margin-top: 12px;
+            line-height: 1.5;
+        }
+
+        .status {
+            font-size: 11px;
+            color: #88ff88;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 10px;
+            color: #555;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="header">
+            <div class="badge">🔐 TOOL BY NTUANDX</div>
+            <h1>DỰ ĐOÁN TÀI XỈU</h1>
+        </div>
+
+        <input type="password" id="apiKey" class="key-input" placeholder="🔑 NHẬP API KEY">
+        <button class="btn" id="verifyBtn">🔓 XÁC THỰC</button>
+
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="admin-panel">
+            <div class="admin-title">👑 ADMIN PANEL - QUẢN LÝ KEY</div>
+            <div class="key-input-group">
+                <input type="text" id="newUserName" class="key-input-small" placeholder="Tên người dùng">
+                <select id="expirySelect" class="expiry-select">
+                    <option value="day">📅 1 Ngày</option>
+                    <option value="week">📅 1 Tuần</option>
+                    <option value="month">📅 1 Tháng</option>
+                    <option value="year">📅 1 Năm</option>
+                    <option value="forever" selected>♾️ Vĩnh Viễn</option>
+                </select>
+                <button id="generateKeyBtn" class="key-gen-btn">✨ TẠO</button>
+            </div>
+            <div class="key-list" id="keyList"></div>
+            <div id="adminStatus" style="color: #ffaa44; font-size: 10px; text-align: center; margin-top: 8px;"></div>
+        </div>
+
+        <!-- Kết quả dự đoán -->
+        <div id="resultArea" style="display: none;">
+            <div class="stat-row">
+                <div class="stat-card">
+                    <div class="stat-number tai" id="taiCount">0</div>
+                    <div class="stat-label">TÀI</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number xiu" id="xiuCount">0</div>
+                    <div class="stat-label">XỈU</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalCount" style="color: #ffaa44;">0</div>
+                    <div class="stat-label">TỔNG</div>
+                </div>
+            </div>
+
+            <div class="session-box">
+                <div style="font-size: 11px; color: #aaa;">PHIÊN HIỆN TẠI</div>
+                <div class="session-value" id="sessionId">#---</div>
+                <div style="font-size: 13px; margin-top: 5px; color: #ffaa44;" id="sessionDetail"></div>
+            </div>
+
+            <div id="predictionResult" class="prediction-value pred-tai">TÀI</div>
+            <div class="confidence-bar">
+                <div class="confidence-fill" id="confidenceBar"></div>
+            </div>
+            <div style="font-size: 12px; text-align: center; margin: 5px 0; color: #ffaa44;" id="confidenceText">Độ tin cậy: 0%</div>
+
+            <div class="history-list" id="historyList"></div>
+            <div class="analysis-text" id="analysisText"></div>
+        </div>
+
+        <div class="status" id="status">🔌 Nhập API Key để bắt đầu</div>
+        <div class="footer">© 2026 TOOL BY NTUANDX | Tự động cập nhật mỗi 5 giây</div>
+    </div>
+</div>
+
+<script>
+    // ==================== HỆ THỐNG API KEY ====================
+    const MASTER_KEY = "NTUANDX2026";
+    let apiKeys = {};
+    let currentUser = null;
+    let currentApiKey = null;
+    let autoInterval = null;
+
+    // API URL và token (giữ nguyên)
+    const API_URL = "https://wtxmd52.tele68.com/v1/txmd5/lite-sessions?cp=R&cl=R&pf=web&at=8018f6d94ac70c2b96968b3cebe764aa";
+    let bearToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2RlIjowLCJtZXNzYWdlIjoiU3VjY2VzcyIsIm5pY2tOYW1lIjoiQm9tYm92dHYiLCJhY2Nlc3NUb2tlbiI6IjgwMThmNmQ5NGFjNzBjMmI5Njk2OGIzY2ViZTc2NGFhIiwiaXNMb2dpbiI6dHJ1ZSwibW9uZXkiOjYwMCwiaWQiOiI3NTgxODY4IiwidXNlcm5hbWUiOiJob2FuZ3Z0MjIxMSIsImlhdCI6MTc3NTE0MDc2MCwiZXhwIjoxNzc1MTY5NTYwfQ.h5I1xokmdqCsKewdOBX0CXQiDHiUPqRc4ZVxOv0frXw";
+
+    function loadKeys() {
+        const saved = localStorage.getItem("ntuandx_keys");
+        if(saved) {
+            apiKeys = JSON.parse(saved);
+        } else {
+            apiKeys = {
+                "VIP123456": { name: "User Demo", expiry: "forever", expiryDate: null, createdAt: Date.now(), usage: 0, active: true },
+                "TAIXIU2026": { name: "VIP Member", expiry: "year", expiryDate: null, createdAt: Date.now(), usage: 0, active: true }
+            };
+            saveKeys();
+        }
+    }
+
+    function saveKeys() {
+        localStorage.setItem("ntuandx_keys", JSON.stringify(apiKeys));
+    }
+
+    function getExpiryDate(expiry) {
+        if(expiry === "forever") return null;
+        const now = new Date();
+        if(expiry === "day") return new Date(now.setDate(now.getDate() + 1));
+        if(expiry === "week") return new Date(now.setDate(now.getDate() + 7));
+        if(expiry === "month") return new Date(now.setMonth(now.getMonth() + 1));
+        if(expiry === "year") return new Date(now.setFullYear(now.getFullYear() + 1));
+        return null;
+    }
+
+    function generateKey(name, expiry) {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let key = "";
+        for(let i = 0; i < 16; i++) {
+            key += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        const expiryDate = getExpiryDate(expiry);
+        apiKeys[key] = {
+            name: name,
+            expiry: expiry,
+            expiryDate: expiryDate ? expiryDate.toISOString() : null,
+            createdAt: Date.now(),
+            usage: 0,
+            active: true
+        };
+        saveKeys();
+        return key;
+    }
+
+    function deleteKey(key) {
+        if(apiKeys[key]) {
+            delete apiKeys[key];
+            saveKeys();
+            return true;
+        }
+        return false;
+    }
+
+    function verifyKey(key) {
+        if(key === MASTER_KEY) {
+            return { success: true, isMaster: true, user: { name: "ADMIN" } };
+        }
+        if(apiKeys[key] && apiKeys[key].active) {
+            if(apiKeys[key].expiryDate) {
+                const expiryDate = new Date(apiKeys[key].expiryDate);
+                if(expiryDate < new Date()) {
+                    return { success: false, message: "Key đã hết hạn" };
+                }
+            }
+            return { success: true, isMaster: false, user: apiKeys[key], key: key };
+        }
+        return { success: false, message: "Key không hợp lệ" };
+    }
+
+    function incrementUsage(key) {
+        if(apiKeys[key]) {
+            apiKeys[key].usage++;
+            saveKeys();
+        }
+    }
+
+    function renderAdminPanel() {
+        const keyListDiv = document.getElementById('keyList');
+        let html = '';
+        let totalKeys = 0;
+        let totalUsage = 0;
+        
+        for(let [key, data] of Object.entries(apiKeys)) {
+            totalKeys++;
+            totalUsage += data.usage;
+            const expiryText = data.expiry === "forever" ? "♾️ Vĩnh viễn" : (data.expiry === "day" ? "📅 1 ngày" : data.expiry === "week" ? "📅 1 tuần" : data.expiry === "month" ? "📅 1 tháng" : "📅 1 năm");
+            html += `
+                <div class="key-item">
+                    <div style="flex:1">
+                        <strong>${data.name}</strong><br>
+                        <code>${key}</code>
+                        <div style="font-size: 8px; color: #aaa;">📊 ${data.usage} lượt | ${expiryText}</div>
+                    </div>
+                    <button class="del-key" onclick="deleteKeyHandler('${key}')">🗑️ XÓA</button>
+                </div>
+            `;
+        }
+        keyListDiv.innerHTML = html || '<div style="padding: 10px; text-align: center;">📭 Chưa có key nào</div>';
+        document.getElementById('adminStatus').innerHTML = `📊 Tổng: ${totalKeys} key | ${totalUsage} lượt dùng`;
+    }
+
+    window.deleteKeyHandler = function(key) {
+        if(confirm("Xóa key này?")) {
+            deleteKey(key);
+            renderAdminPanel();
+        }
+    };
+
+    // ==================== DỰ ĐOÁN ====================
+    async function fetchData() {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${bearToken}`
+                }
+            });
+            return await response.json();
+        } catch(error) {
+            console.error('Lỗi:', error);
+            return null;
+        }
+    }
+
+    function analyzePrediction(history) {
+        if(!history || history.length < 5) return null;
+        const results = history.map(r => r.result);
+        const taiCount = results.filter(r => r === 'TAI').length;
+        const xiuCount = results.filter(r => r === 'XIU').length;
+        const total = results.length;
+        
+        let streak = 1;
+        for(let i = 1; i < results.length; i++) {
+            if(results[i] === results[0]) streak++;
+            else break;
+        }
+        const lastResult = results[0];
+        const last5 = results.slice(0, 5);
+        const tai5 = last5.filter(r => r === 'TAI').length;
+        const xiu5 = last5.filter(r => r === 'XIU').length;
+        const last10 = results.slice(0, 10);
+        const tai10 = last10.filter(r => r === 'TAI').length;
+        const xiu10 = last10.filter(r => r === 'XIU').length;
+        
+        let prediction = null;
+        let confidence = 50;
+        
+        if(streak >= 4) {
+            prediction = lastResult === 'TAI' ? 'XIU' : 'TAI';
+            confidence = Math.min(88, 60 + (streak - 3) * 8);
+        } else if(streak === 3) {
+            prediction = lastResult;
+            confidence = 68;
+        } else if(streak === 2) {
+            prediction = lastResult;
+            confidence = 72;
+        } else {
+            let score = 50;
+            score += ((tai10 - xiu10) / 10) * 35;
+            score += ((tai5 - xiu5) / 5) * 25;
+            score += ((taiCount - xiuCount) / total) * 20;
+            if(taiCount > xiuCount + 8) score -= 10;
+            if(xiuCount > taiCount + 8) score += 10;
+            score = Math.min(75, Math.max(25, score));
+            prediction = score >= 50 ? 'TAI' : 'XIU';
+            confidence = Math.abs(score - 50) * 1.6 + 50;
+            confidence = Math.min(85, Math.round(confidence));
+        }
+        
+        return {
+            prediction, confidence,
+            stats: { taiCount, xiuCount, total, taiRate: (taiCount/total*100).toFixed(1) },
+            streak, lastResult,
+            last5: { tai: tai5, xiu: xiu5 },
+            last10: { tai: tai10, xiu: xiu10 }
+        };
+    }
+
+    async function update() {
+        if(!currentUser) return;
+        const statusDiv = document.getElementById('status');
+        statusDiv.innerHTML = '⏳ Đang cập nhật...';
+        
+        const data = await fetchData();
+        if(!data || !data.list) {
+            statusDiv.innerHTML = '❌ Lỗi kết nối. Kiểm tra token!';
+            return;
+        }
+        
+        const list = data.list;
+        const stats = data.typeStat || { TAI: 0, XIU: 0 };
+        const history = list.slice(0, 30).map(item => ({
+            id: item.id, result: item.resultTruyenThong, point: item.point, dices: item.dices
+        }));
+        const analysis = analyzePrediction(history);
+        if(!analysis) return;
+        
+        document.getElementById('taiCount').innerHTML = stats.TAI;
+        document.getElementById('xiuCount').innerHTML = stats.XIU;
+        document.getElementById('totalCount').innerHTML = stats.TAI + stats.XIU;
+        
+        const latest = history[0];
+        document.getElementById('sessionId').innerHTML = `#${latest.id}`;
+        if(latest.dices) {
+            const diceMap = {1:'⚀',2:'⚁',3:'⚂',4:'⚃',5:'⚄',6:'⚅'};
+            document.getElementById('sessionDetail').innerHTML = `${diceMap[latest.dices[0]]} ${diceMap[latest.dices[1]]} ${diceMap[latest.dices[2]]} | ${latest.point} điểm | ${latest.result}`;
+        } else {
+            document.getElementById('sessionDetail').innerHTML = `${latest.result}`;
+        }
+        
+        const predDiv = document.getElementById('predictionResult');
+        predDiv.innerHTML = analysis.prediction === 'TAI' ? 'TÀI' : 'XỈU';
+        predDiv.className = `prediction-value ${analysis.prediction === 'TAI' ? 'pred-tai' : 'pred-xiu'}`;
+        document.getElementById('confidenceBar').style.width = `${analysis.confidence}%`;
+        document.getElementById('confidenceText').innerHTML = `Độ tin cậy: ${analysis.confidence}%`;
+        
+        const historyList = document.getElementById('historyList');
+        historyList.innerHTML = history.slice(0, 15).map((h, idx) => 
+            `<div class="history-item ${h.result === 'TAI' ? 'history-tai' : 'history-xiu'} ${idx === 0 ? 'history-current' : ''}">
+                ${h.result === 'TAI' ? 'T' : 'X'}
+            </div>`
+        ).join('');
+        
+        document.getElementById('analysisText').innerHTML = `
+            ▸ Cầu ${analysis.streak} phiên ${analysis.lastResult}<br>
+            ▸ 5 phiên gần: Tài ${analysis.last5.tai} - Xỉu ${analysis.last5.xiu}<br>
+            ▸ 10 phiên gần: Tài ${analysis.last10.tai} - Xỉu ${analysis.last10.xiu}<br>
+            ▸ Tổng thể: Tài ${analysis.stats.taiCount} - Xỉu ${analysis.stats.xiuCount} (${analysis.stats.taiRate}% Tài)
+        `;
+        
+        statusDiv.innerHTML = `✅ Dự đoán: ${analysis.prediction} | Độ tin cậy: ${analysis.confidence}% | ${new Date().toLocaleTimeString()}`;
+        
+        if(currentApiKey && apiKeys[currentApiKey]) {
+            incrementUsage(currentApiKey);
+        }
+    }
+
+    function startAutoUpdate() {
+        if(autoInterval) clearInterval(autoInterval);
+        autoInterval = setInterval(() => { if(currentUser) update(); }, 5000);
+    }
+
+    function verifyAndStart() {
+        const key = document.getElementById('apiKey').value.trim();
+        if(!key) { alert("⚠️ Vui lòng nhập API Key!"); return; }
+        const result = verifyKey(key);
+        
+        if(result.success) {
+            currentUser = result.user;
+            currentApiKey = result.key || key;
+            document.getElementById('status').innerHTML = `✅ Xác thực thành công! Chào ${result.isMaster ? 'ADMIN' : result.user.name}`;
+            document.getElementById('apiKey').style.borderColor = "#00ff88";
+            document.getElementById('resultArea').style.display = 'block';
+            
+            if(result.isMaster) {
+                document.getElementById('adminPanel').style.display = 'block';
+                renderAdminPanel();
+            } else {
+                document.getElementById('adminPanel').style.display = 'none';
+            }
+            update();
+            startAutoUpdate();
+        } else {
+            alert(`❌ ${result.message || "API Key không hợp lệ!"}`);
+            document.getElementById('apiKey').style.borderColor = "#ff4444";
+        }
+    }
+
+    function generateNewKey() {
+        const name = document.getElementById('newUserName').value.trim();
+        const expiry = document.getElementById('expirySelect').value;
+        if(!name) { alert("⚠️ Vui lòng nhập tên người dùng!"); return; }
+        const newKey = generateKey(name, expiry);
+        const expiryText = expiry === "forever" ? "Vĩnh viễn" : (expiry === "day" ? "1 ngày" : expiry === "week" ? "1 tuần" : expiry === "month" ? "1 tháng" : "1 năm");
+        alert(`✅ Tạo key thành công!\n\n🔑 KEY: ${newKey}\n👤 USER: ${name}\n⏰ HẠN: ${expiryText}`);
+        document.getElementById('newUserName').value = '';
+        renderAdminPanel();
+    }
+
+    document.getElementById('verifyBtn').onclick = verifyAndStart;
+    document.getElementById('generateKeyBtn').onclick = generateNewKey;
+    document.getElementById('apiKey').addEventListener('keypress', (e) => { if(e.key === 'Enter') verifyAndStart(); });
+    
+    loadKeys();
+    console.log('🔐 TOOL BY NTUANDX - NHẬP API KEY ĐỂ DÙNG');
+    console.log('📌 MASTER KEY: NTUANDX2026');
+</script>
+</body>
+</html>
